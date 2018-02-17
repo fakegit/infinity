@@ -4,6 +4,7 @@ import requests # Module for making HTTP requests
 from requests.auth import HTTPBasicAuth # Importing a function which lets us submit HTTP auth credentials
 import re # module for regular expression
 import mechanize
+import sys
 
 br = mechanize.Browser() # Just shortening the calling function
 br.set_handle_robots(False) # Don't follow robots.txt
@@ -46,16 +47,16 @@ validated = [] # the numbers from possible list validated by twilio.com API
 
 # Function to extract digits from the entered number
 def extract(phone_number):
-	for x in list(phone_number):
-		if x.isdigit(): # checks if x is a digit
-			count.append(int(x))
+    for x in list(phone_number):
+        if x.isdigit(): # checks if x is a digit
+            count.append(int(x))
 
 # Function to set the limit for brutefocing
 def limits(count):
-	limit = []
-	for x in range(phone_number.count('x')):
-		limit.append('9')
-	return int(''.join(limit))
+    limit = []
+    for x in range(phone_number.count('x')):
+        limit.append('9')
+    return int(''.join(limit))
 
 # This function can find sum of digits contained in an integer
 def get_sum(x):
@@ -67,49 +68,50 @@ def get_sum(x):
 # If we need to bruteforce for 3 digits and the magic sum should be 6, even 3 and 3 has a sum of 6 but we need
 # 3 digits, so we will append a zero before it. This function appends a padding of zeros
 def add_zero(length):
-	padding = phone_number.count('x') - int(length)
-	zero_dump = []
-	for x in range(padding):
-		zero_dump.append('0')
-	return ''.join(zero_dump)
+    padding = phone_number.count('x') - int(length)
+    zero_dump = []
+    for x in range(padding):
+        zero_dump.append('0')
+    return ''.join(zero_dump)
 
 # Generates possible combinations
 def bruteforce(phone_number):
-	for x in range(0, limits(count)):
-		new_number = phone_number
-		if get_sum(x) == new_sum:
-			if len(str(x)) != len(count):
-				possible.append(re.sub(r'x+', add_zero(len(str(x))) + str(x), new_number))
-			else:
-				possible.append(re.sub(r'x+', str(x), new_number))
+    for x in range(0, limits(count)):
+        new_number = phone_number
+        if get_sum(x) == new_sum:
+            if len(str(x)) != len(count):
+                possible.append(re.sub(r'x+', add_zero(len(str(x))) + str(x), new_number))
+            else:
+                possible.append(re.sub(r'x+', str(x), new_number))
 
 # Validates generated combinations with twilio.com API
 def validate(database):
-	for number in database:
-		response = requests.get('https://lookups.twilio.com/v1/PhoneNumbers/%%2B%s' % (country_code, number) , auth=HTTPBasicAuth(account_sid, auth_token)).text
-		if '"status": 404' not in response:
-			validated.append(number)
-	choice = raw_input('%s Would you like to store the numbers for further processing? [Y/n] ' % que).lower()
-	if choice != 'n':
-		save(possible)
+    for number in database:
+        response = requests.get('https://lookups.twilio.com/v1/PhoneNumbers/%%2B%s%s' % (country_code, number) , auth=HTTPBasicAuth(account_sid, auth_token)).text
+        if '"status": 404' not in response:
+            validated.append(number)
+    print '%s %i out of %i numbers are alive.' % (good, len(validated), len(possible))
+    choice = raw_input('%s Would you like to store the numbers for further processing? [Y/n] ' % que).lower()
+    if choice != 'n':
+        save(possible)
 
 # Uses facebook's password reset form to find user info
 def get_info(database):
-	for number in database:
-		br.open('https://m.facebook.com/login/identify/?ctx=recover')
-		br.select_form(nr=0)
-		br.form['email'] = number
-		req = br.submit()
-		response = req.read()
-		match = re.search(r'<div class="bi bj"><strong>[^<]*</strong></div>', response)
-		if match:
-			print number, ' : ', match.group().split('<div class="bi bj"><strong>')[1][:-15]
+    for number in database:
+        br.open('https://m.facebook.com/login/identify/?ctx=recover')
+        br.select_form(nr=0)
+        br.form['email'] = number
+        req = br.submit()
+        response = req.read()
+        match = re.search(r'<div class="bi bj"><strong>[^<]*</strong></div>', response)
+        if match:
+            print '%s : %s' % (number, match.group().split('<div class="bi bj"><strong>')[1][:-15])
 
 # A function to write stuff to a file
 def save(list_to_save):
-	with open ('%s.txt' % phone_number, 'a+') as text_file:
-		for x in list_to_save:
-			text_file.write(x + '\n')
+    with open ('%s.txt' % phone_number, 'a+') as text_file:
+        for x in list_to_save:
+            text_file.write(x + '\n')
 
 extract(phone_number)
 limits(count)
@@ -121,16 +123,15 @@ bruteforce(phone_number)
 print '%s %i combination generated' % (good, len(possible))
 choice = raw_input('%s Would you like to store the numbers for further processing? [Y/n] ' % que).lower()
 if choice != 'n':
-	save(possible)
+    save(possible)
 
 choice = raw_input('%s Would you like to check which ones are alive? [Y/n] ' % que).lower()
 
 if choice == 'n':
-	print '%s Checking generated numbers for user info' % run
-	get_info(possible)
+    print '%s Checking generated numbers for user info' % run
+    get_info(possible)
 
 else:
-	validate(possible)
-	print '%s %i out of %i numbers are alive.' % (good, len(validated), len(possible))
-	print '%s Checking validated numbers for user info' % run
-	get_info(validated)
+    validate(possible)
+    print '%s Checking validated numbers for user info' % run
+    get_info(validated)
