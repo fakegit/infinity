@@ -9,7 +9,7 @@ Put this repo on watch for updates.
 To know what it excatly does you should read <a href=https://teamultimate.in/find-phone-number-facebook/>this article</a>.<br>
 Here's a screenshot you can fap to:
 
-<img src='https://i.imgur.com/kMqe0XE.png' />
+<img src='https://i.imgur.com/XUFgBqx.png' />
 
 ### Requirements
 infinity will run on any operating system having python2 interpereter installed.<br>
