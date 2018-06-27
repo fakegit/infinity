@@ -3,7 +3,8 @@
 
 <b>infinity</b> isn't just a tool, its a technique to find out someone's phone number.
 It involves social engineering, common sense and maths.<br>
-Put this repo on watch for updates.
+
+**Note:** It no longer works!
 
 ## What it does?
 To know what it excatly does you should read <a href=https://teamultimate.in/find-phone-number-facebook/>this article</a>.<br>
