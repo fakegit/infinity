@@ -1,5 +1,4 @@
 # infinity
-<img src='https://i.imgur.com/oFNWkl7.png' />
 
 <b>infinity</b> isn't just a tool, its a technique to find out someone's phone number.
 It involves social engineering, common sense and maths.<br>
@@ -22,6 +21,3 @@ Following libraries should be installed in your system:
 
 ### Disclaimer
 I am not responsible for your shit.
-
-### License
-<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
